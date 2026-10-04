@@ -1,53 +1,22 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const dns = require("dns");
 require("dotenv").config();
 
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
-const authRoutes = require("./routes/authRoutes");
-const attendanceRoutes = require("./routes/attendanceRoutes");
-const resultRoutes = require("./routes/resultRoutes");
-const progressRoutes = require("./routes/progressRoutes");
-const noticeRoutes = require("./routes/noticeRoutes");
-
-const app = express();
+const app = require("./app");
+const connectToDatabase = require("./database");
 const port = process.env.PORT || 5000;
-const allowedOrigins = [
-  "https://school-management--frontend.vercel.app"
-];
-
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // only if you use cookies
-  })
-);
-app.options("*", cors());
-app.use(express.json());
-
-app.use("/api/auth", authRoutes);
-app.use("/api/attendance", attendanceRoutes);
-app.use("/api/results", resultRoutes);
-app.use("/api/progress", progressRoutes);
-app.use("/api/notices", noticeRoutes);
-
-app.get("/", (req, res) => {
-  res.json({ message: "School Management API is running" });
-});
 
 async function run() {
-  await mongoose.connect(process.env.MONGO_URL);
+  await connectToDatabase();
   console.log("Connected to MongoDB");
   app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
 }
 
-run().catch((error) => {
-  console.error("MongoDB connection failed:", error.message);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  run().catch((error) => {
+    console.error("MongoDB connection failed:", error.message);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = app;
