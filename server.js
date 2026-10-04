@@ -15,8 +15,7 @@ const noticeRoutes = require("./routes/noticeRoutes");
 const app = express();
 const port = process.env.PORT || 5000;
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://your-frontend-domain.vercel.app", // add your deployed frontend too
+  "https://school-management--frontend.vercel.app"
 ];
 
 app.use(
